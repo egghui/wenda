@@ -1,0 +1,83 @@
+<html>
+<body>
+<pre>
+    #*
+    块注释
+    *#
+    $!{value1} ##行注释
+    $!{value2} ##!意思是 如果变量不存在 不显示
+    ${value3}  ##不加!显示为文本
+
+    colors:$!{colors}
+
+    #foreach($color in $colors)##for循环
+        $color
+    #end
+
+    ##写列表什么的可能需要count和index
+    ##index和count是两个for循环自带的变量 因为是循环 所以foreach.
+    ##所有的变量都是$开头的
+
+    #foreach($color in $colors)
+        This is color $!{foreach.index}:$color, $!{foreach.count}
+    #end
+
+    ##模板里可以调用java的函数 如下面的map.keySet() map.get(key)
+
+    #foreach($key in $map.keySet())
+        key:$key, value:$map.get($key)
+    #end
+
+    ##用entrySet遍历map
+
+    #foreach($kv in $map.entrySet())
+        key:$kv.key, value:$kv.value
+    #end
+
+    ##调用User类的方法 写方法直接调用方法 写字段模板会去查找有没有以get或is开头的对应的方法
+
+    User: $!{user.name}
+    User: $!{user.description}
+    User: $!{user.getDescription()}
+
+    ##模板里可以自己定义调用变量
+
+    #set($title = "nowcoder_title")
+    Title: $!{title}
+
+    ##提高复用性 一、parse和include 二、macro宏
+
+    ##parse会做模板变量解析 include只是单纯的模板里的文本包含进来
+    ##所以需要解析时用parse 不需解析时用include,效率更高
+    ##parse和include主要用在头尾上 写一些公共的部分
+
+    Parse: #parse("header.html")
+    Include: #include("header.html")
+
+    ##模板语言还支持函数的定义
+    ##一般把宏放到header.html等功能类里来调用它
+    ##render_color类似函数名 index和color是函数的参数
+
+    #macro(render_color, $index, $color)
+        Color Render Macro $index $color
+    #end
+
+    ##调用宏
+
+    #foreach($color in $colors)
+        #render_color($foreach.index, $color)
+    #end
+
+    ##字符串连接
+    ## ''单引号不可以 直接把内容当成字符串 在模板里不会解析
+
+    #set($hello = "hello")
+    #set($helloworld1 = "$!{hello} world")
+    #set($helloworld2 = '$!{hello} world')
+    $!{hello}
+    $!{helloworld1}
+    ${helloworld2}
+
+</pre>
+</body>
+</html>
